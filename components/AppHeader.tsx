@@ -1,7 +1,8 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
-import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { useNotifications } from '@/app/_layout';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface HeaderProps {
   onNotificationPress?: () => void;
@@ -9,8 +10,13 @@ interface HeaderProps {
 
 export const AppHeader: React.FC<HeaderProps> = ({ onNotificationPress }) => {
   const colorScheme = useColorScheme();
-  
+  const { setShowNotifications } = useNotifications();
   const isDark = colorScheme === 'dark';
+
+  const handleNotificationPress = () => {
+    setShowNotifications(true);
+    onNotificationPress?.();
+  };
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: isDark ? '#1C1C1E' : '#FFFFFF' }]}>
@@ -31,7 +37,7 @@ export const AppHeader: React.FC<HeaderProps> = ({ onNotificationPress }) => {
         {/* Right side - Notification Icon */}
         <TouchableOpacity 
           style={[styles.notificationButton, { backgroundColor: isDark ? '#2C2C2E' : '#F8F8F8' }]}
-          onPress={onNotificationPress}
+          onPress={handleNotificationPress}
           activeOpacity={0.7}
         >
           <Ionicons 
@@ -41,7 +47,7 @@ export const AppHeader: React.FC<HeaderProps> = ({ onNotificationPress }) => {
           />
           {/* Notification badge */}
           <View style={styles.notificationBadge}>
-            <Text style={styles.badgeText}>3</Text>
+            <Text style={styles.badgeText}>5</Text>
           </View>
         </TouchableOpacity>
       </View>

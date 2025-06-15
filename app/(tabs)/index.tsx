@@ -134,7 +134,7 @@ export default function HomeScreen() {
     <View style={[styles.container, { backgroundColor: isDark ? '#000000' : '#F8F8F8' }]}>
       {/* <AppHeader onNotificationPress={handleNotificationPress} /> */}
       
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 80 }}>
         {/* Market Overview */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: isDark ? '#FFFFFF' : '#1a1a1a' }]}>
