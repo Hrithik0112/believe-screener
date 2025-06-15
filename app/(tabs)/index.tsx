@@ -10,6 +10,7 @@ import {
 import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
 import { AppHeader } from '@/components/AppHeader';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { useRouter } from 'expo-router';
 
 // Mock data - replace with real API data
 const marketStats = {
@@ -76,6 +77,8 @@ export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
 
+  const router = useRouter();
+
   const handleNotificationPress = () => {
     console.log('Notification pressed');
   };
@@ -85,7 +88,9 @@ export default function HomeScreen() {
   };
 
   const renderCryptoItem = ({ item }: { item: typeof cryptoList[0] }) => (
-    <TouchableOpacity style={[styles.cryptoItem, { backgroundColor: isDark ? '#2C2C2E' : '#FFFFFF' }]}>
+    <TouchableOpacity
+    onPress={() => router.push('/coinDetailsScreen')}
+    style={[styles.cryptoItem, { backgroundColor: isDark ? '#2C2C2E' : '#FFFFFF' }]}>
       <View style={styles.cryptoHeader}>
         <View style={styles.cryptoInfo}>
           <Text style={[styles.cryptoName, { color: isDark ? '#FFFFFF' : '#1a1a1a' }]}>
