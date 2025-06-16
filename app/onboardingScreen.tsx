@@ -1,13 +1,14 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import {
-  View,
-  Text,
+  Dimensions,
   FlatList,
   Image,
-  TouchableOpacity,
-  Dimensions,
   StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
 const { width } = Dimensions.get('window');
@@ -41,6 +42,16 @@ const OnboardingScreen = () => {
   const flatListRef = useRef<FlatList>(null);
   const router = useRouter();
 
+  const completeOnboarding = async () => {
+    try {
+      await AsyncStorage.setItem('hasSeenOnboarding', 'true');
+      router.replace('/login');
+    } catch (error) {
+      console.error('Error saving onboarding status:', error);
+      router.replace('/login');
+    }
+  };
+
   const handleScroll = (event: any) => {
     const index = Math.round(event.nativeEvent.contentOffset.x / width);
     setCurrentIndex(index);
@@ -50,7 +61,7 @@ const OnboardingScreen = () => {
     if (currentIndex < onboardingData.length - 1) {
       flatListRef.current?.scrollToIndex({ index: currentIndex + 1 });
     } else {
-      router.replace('/(tabs)'); // or 'Dashboard'
+      completeOnboarding();
     }
   };
 
@@ -61,7 +72,7 @@ const OnboardingScreen = () => {
   };
 
   const handleSkip = () => {
-    router.replace('/(tabs)');
+    completeOnboarding();
   };
 
   return (

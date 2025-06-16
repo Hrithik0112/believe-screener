@@ -1,16 +1,18 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { LinearGradient } from 'expo-linear-gradient'
+import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
 import {
-    Alert,
-    ScrollView,
-    StyleSheet,
-    Switch,
-    Text,
-    TouchableOpacity,
-    View
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native'
 import Animated, { FadeInRight, FadeInUp } from 'react-native-reanimated'
+import { useAuth } from '../context/AuthContext'
   
   // Mock user data
   const userData = {
@@ -34,6 +36,9 @@ import Animated, { FadeInRight, FadeInUp } from 'react-native-reanimated'
     const [biometricAuth, setBiometricAuth] = useState(false)
     const [darkMode, setDarkMode] = useState(false)
     const [priceAlerts, setPriceAlerts] = useState(true)
+  
+    const { logout } = useAuth()
+    const router = useRouter()
   
     // Handle profile actions
     const handleEditProfile = () => {
@@ -65,7 +70,14 @@ import Animated, { FadeInRight, FadeInUp } from 'react-native-reanimated'
         'Are you sure you want to sign out?',
         [
           { text: 'Cancel', style: 'cancel' },
-          { text: 'Sign Out', style: 'destructive', onPress: () => console.log('Sign out') }
+          { 
+            text: 'Sign Out', 
+            style: 'destructive', 
+            onPress: async () => {
+              await logout()
+              router.replace('/login')
+            }
+          }
         ]
       )
     }
