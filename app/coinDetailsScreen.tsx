@@ -130,7 +130,10 @@ const getChartDataForTimeframe = (timeframe: Timeframe): ChartDataPoint[] => {
 export default function CoinDetailsScreen() {
   const colorScheme = useColorScheme();
   const router = useRouter();
-  const params = useLocalSearchParams<{ coinId?: string }>();
+  const params = useLocalSearchParams<{ coin?: any }>();
+  console.log("params",params);
+  const data = JSON.parse(params.coin);
+  console.log("data",data);
   
   const [selectedTimeframe, setSelectedTimeframe] = useState<Timeframe>('1D');
   
@@ -194,15 +197,26 @@ export default function CoinDetailsScreen() {
     </View>
   );
 
-  const renderPriceHistoryItem = (item: PriceHistoryItem): React.JSX.Element => (
-    <View key={item.period} style={styles.priceHistoryItem}>
+  const renderPriceHistoryItem = (): React.JSX.Element => (
+    <>
+    <View key={data.priceChange7d.period} style={styles.priceHistoryItem}>
       <Text style={[styles.priceHistoryPeriod, { color: isDark ? '#FFFFFF' : '#1a1a1a' }]}>
-        {item.period}
+        24 Hours
       </Text>
-      <Text style={[styles.priceHistoryChange, { color: item.color }]}>
-        {item.change}
+      <Text style={[styles.priceHistoryChange, { color: data.priceChange24h.includes('+') ? '#00C851' : '#FF4444' }]}>
+        {data.priceChange24h}
       </Text>
     </View>
+    <View key={data.priceChange7d.period} style={styles.priceHistoryItem}>
+    <Text style={[styles.priceHistoryPeriod, { color: isDark ? '#FFFFFF' : '#1a1a1a' }]}>
+      7 Days
+    </Text>
+    <Text style={[styles.priceHistoryChange, { color: data.priceChange7d.includes('+') ? '#00C851' : '#FF4444' }]}>
+      {data.priceChange7d}
+    </Text>
+  </View>
+    </>
+    
   );
 
   const formatYLabel = (value: number): string => {
@@ -263,7 +277,7 @@ export default function CoinDetailsScreen() {
           <Ionicons name="arrow-back" size={24} color={isDark ? '#FFFFFF' : '#1a1a1a'} />
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { color: isDark ? '#FFFFFF' : '#1a1a1a' }]}>
-          {coin.name}
+          {data.name}
         </Text>
         <View style={styles.headerRight} />
       </View>
@@ -274,11 +288,11 @@ export default function CoinDetailsScreen() {
           <View style={styles.priceHeader}>
             <View>
               <Text style={[styles.currentPrice, { color: isDark ? '#FFFFFF' : '#1a1a1a' }]}>
-                {coin.price}
+                {data.formattedPrice}
               </Text>
               <View style={styles.priceChangeContainer}>
-                <Text style={[styles.priceChange, { color: coin.changeColor }]}>
-                  {coin.change24h}
+                <Text style={[styles.priceChange, { color: data.priceChange24h.includes('+') ? '#00C851' : '#FF4444' }]}>
+                  {data.priceChange24h}
                 </Text>
                 <Text style={[styles.priceChangeLabel, { color: isDark ? '#8E8E93' : '#666' }]}>
                   (24h)
@@ -287,7 +301,7 @@ export default function CoinDetailsScreen() {
             </View>
             <View style={styles.rankBadge}>
               <Text style={styles.rankText}>
-                {marketData.rank}
+                #{data.rank}
               </Text>
             </View>
           </View>
@@ -365,28 +379,17 @@ export default function CoinDetailsScreen() {
           <View style={styles.statsGrid}>
             {renderStatCard({
               title: 'Market Cap',
-              value: coin.marketCap,
+              value: data.formattedMarketCap,
               icon: 'trending-up',
               iconColor: '#4CAF50'
             })}
             {renderStatCard({
               title: 'Volume (24h)',
-              value: coin.volume,
+              value: data.formattedVolume,
               icon: 'bar-chart',
               iconColor: '#FF6B35'
             })}
-            {renderStatCard({
-              title: 'Circulating Supply',
-              value: marketData.circulatingSupply,
-              icon: 'donut-large',
-              iconColor: '#2196F3'
-            })}
-            {renderStatCard({
-              title: 'Total Supply',
-              value: marketData.totalSupply,
-              icon: 'pie-chart',
-              iconColor: '#9C27B0'
-            })}
+            
           </View>
         </View>
 
@@ -396,7 +399,7 @@ export default function CoinDetailsScreen() {
             Price Performance
           </Text>
           <View style={[styles.priceHistoryContainer, { backgroundColor: isDark ? '#2C2C2E' : '#FFFFFF' }]}>
-            {priceHistory.map(renderPriceHistoryItem)}
+            {renderPriceHistoryItem()}
           </View>
         </View>
 

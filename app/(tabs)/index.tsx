@@ -6,11 +6,12 @@ import {
   TouchableOpacity,
   StyleSheet,
   FlatList,
+  ActivityIndicator,
 } from 'react-native';
 import { FontAwesome5, MaterialIcons } from '@expo/vector-icons';
-import { AppHeader } from '@/components/AppHeader';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useRouter } from 'expo-router';
+import { useBelieveTokens } from '@/hooks/useBelieveTokens';
 
 // Mock data - replace with real API data
 const marketStats = {
@@ -20,76 +21,37 @@ const marketStats = {
   "liquidity": "$31.20M",
 };
 
-const cryptoList = [
-  {
-    id: '1',
-    name: 'Bitcoin',
-    symbol: 'BTC',
-    price: '$67,234.50',
-    change24h: '+2.45%',
-    changeColor: '#4CAF50',
-    marketCap: '$1.3T',
-    volume: '$28.5B',
-  },
-  {
-    id: '2',
-    name: 'Ethereum',
-    symbol: 'ETH',
-    price: '$3,421.80',
-    change24h: '-1.23%',
-    changeColor: '#F44336',
-    marketCap: '$411.2B',
-    volume: '$15.2B',
-  },
-  {
-    id: '3',
-    name: 'Launch Coin',
-    symbol: 'LAUNCH',
-    price: '$0.145842',
-    change24h: '-4.24%',
-    changeColor: '#F44336',
-    marketCap: '$145.81M',
-    volume: '$32.69M',
-  },
-  {
-    id: '4',
-    name: 'Dupe',
-    symbol: 'DUPE',
-    price: '$0.012673',
-    change24h: '-3.44%',
-    changeColor: '#F44336',
-    marketCap: '$12.67M',
-    volume: '$912.53K',
-  },
-  {
-    id: '5',
-    name: 'CreatorBuddy',
-    symbol: 'BUDDY',
-    price: '$0.009030',
-    change24h: '-7.62%',
-    changeColor: '#F44336',
-    marketCap: '$9.03M',
-    volume: '$1.04M',
-  },
-];
+
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
 
+  const { tokens, loading, error, refetch } = useBelieveTokens(true, 30000);
+
+
+
   const router = useRouter();
 
-  const handleNotificationPress = () => {
-    console.log('Notification pressed');
-  };
+  // const handleNotificationPress = () => {
+  //   console.log('Notification pressed');
+  // };
 
   const handleViewAllPress = () => {
     console.log('View all pressed');
+    router.push({
+      pathname: '/search',
+    })
   };
 
-  const renderCryptoItem = ({ item }: { item: typeof cryptoList[0] }) => (
+  const renderCryptoItem = ({ item }: { item: any }) => (
     <TouchableOpacity
-    onPress={() => router.push('/coinDetailsScreen')}
+    onPress={() => router.push({
+      pathname: '/coinDetailsScreen',
+      params: {
+        coin: JSON.stringify(item)
+      }
+    })}
     style={[styles.cryptoItem, { backgroundColor: isDark ? '#2C2C2E' : '#FFFFFF' }]}>
       <View style={styles.cryptoHeader}>
         <View style={styles.cryptoInfo}>
@@ -102,7 +64,7 @@ export default function HomeScreen() {
         </View>
         <View style={styles.priceInfo}>
           <Text style={[styles.cryptoPrice, { color: isDark ? '#FFFFFF' : '#1a1a1a' }]}>
-            {item.price}
+            {item.formattedPrice}
           </Text>
           <Text style={[styles.cryptoChange, { color: item.changeColor }]}>
             {item.change24h}
@@ -115,7 +77,7 @@ export default function HomeScreen() {
             Market Cap
           </Text>
           <Text style={[styles.statValue, { color: isDark ? '#FFFFFF' : '#1a1a1a' }]}>
-            {item.marketCap}
+            {item.formattedMarketCap}
           </Text>
         </View>
         <View>
@@ -123,7 +85,7 @@ export default function HomeScreen() {
             Volume (24h)
           </Text>
           <Text style={[styles.statValue, { color: isDark ? '#FFFFFF' : '#1a1a1a' }]}>
-            {item.volume}
+            {item.formattedVolume}
           </Text>
         </View>
       </View>
@@ -193,14 +155,21 @@ export default function HomeScreen() {
               <Text style={styles.viewAllText}>View All</Text>
             </TouchableOpacity>
           </View>
-          
+          {
+            loading ? <ActivityIndicator /> :
+
           <FlatList
-            data={cryptoList}
+            data={tokens.slice(0, 10)}
             renderItem={renderCryptoItem}
             keyExtractor={(item) => item.id}
             scrollEnabled={false}
             showsVerticalScrollIndicator={false}
           />
+          }
+          {
+            error && <Text>Error: {error}</Text>
+          }
+          
         </View>
       </ScrollView>
     </View>

@@ -11,6 +11,7 @@ import {
   } from 'react-native'
   import React, { useState, useEffect } from 'react'
 import { router } from 'expo-router'
+import { useBelieveTokens } from '@/hooks/useBelieveTokens'
   
   // Mock crypto data
   const mockCryptoData = [
@@ -97,30 +98,22 @@ import { router } from 'expo-router'
   ]
   
   export default function Search() {
-    const [cryptoData, setCryptoData] = useState([])
-    const [filteredData, setFilteredData] = useState([])
+    const [cryptoData, setCryptoData] = useState<any[]>([])
+    const [filteredData, setFilteredData] = useState<any[]>([])
     const [searchQuery, setSearchQuery] = useState('')
-    const [loading, setLoading] = useState(true)
-  
-    // Simulate API call with fake loader
-    useEffect(() => {
-      const loadData = async () => {
-        setLoading(true)
-        // Simulate API delay
-        setTimeout(() => {
-          setCryptoData(mockCryptoData as any)
-          setFilteredData(mockCryptoData as any)
-          setLoading(false)
-        }, 2000) // 2 second delay to simulate API call
-      }
-      
-      loadData()
-    }, [])
+
+    const { tokens, loading, error, refetch } = useBelieveTokens(true, 30000);
+
+  useEffect(() => {
+    setCryptoData(tokens)
+    setFilteredData(tokens)
+  }, [tokens])
+
   
     // Handle search functionality
     useEffect(() => {
       if (searchQuery.trim() === '') {
-        setFilteredData(cryptoData)
+        setFilteredData(tokens)
       } else {
         const filtered = cryptoData.filter((coin: any) => 
           coin.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -131,29 +124,34 @@ import { router } from 'expo-router'
     }, [searchQuery, cryptoData])
   
     // Handle coin card click
-    const handleCoinPress = (coin: any) => {
-      Alert.alert(
-        coin.name,
-        `Price: ${coin.price}\nMarket Cap: ${coin.marketCap}\nChange: ${coin.change}`,
-        [
-          { text: 'View Details', onPress: () => console.log(`Navigate to ${coin.name} details`) },
-          { text: 'Add to Watchlist', onPress: () => console.log(`Added ${coin.name} to watchlist`) },
-          { text: 'Cancel', style: 'cancel' }
-        ]
-      )
-    }
+    // const handleCoinPress = (coin: any) => {
+    //   Alert.alert(
+    //     coin.name,
+    //     `Price: ${coin.price}\nMarket Cap: ${coin.marketCap}\nChange: ${coin.change}`,
+    //     [
+    //       { text: 'View Details', onPress: () => console.log(`Navigate to ${coin.name} details`) },
+    //       { text: 'Add to Watchlist', onPress: () => console.log(`Added ${coin.name} to watchlist`) },
+    //       { text: 'Cancel', style: 'cancel' }
+    //     ]
+    //   )
+    // }
   
     // Render individual coin card
     const renderCoinCard = ({ item }: { item: any }) => (
       <TouchableOpacity 
         style={styles.coinCard} 
-        onPress={() => router.push('/coinDetailsScreen')}
+        onPress={() => router.push({
+          pathname: '/coinDetailsScreen',
+          params: {
+            coin: JSON.stringify(item)
+          }
+        })}
         activeOpacity={0.7}
       >
         <View style={styles.coinInfo}>
           <View style={styles.coinHeader}>
             <View style={styles.coinImageContainer}>
-              <Text style={styles.coinIcon}>{item.symbol.charAt(0)}</Text>
+              <Image source={{ uri: item.image }} style={styles.coinImage} />
             </View>
             <View style={styles.coinDetails}>
               <Text style={styles.coinName}>{item.name}</Text>
@@ -164,11 +162,11 @@ import { router } from 'expo-router'
             <Text style={styles.coinPrice}>{item.price}</Text>
             <Text style={[
               styles.coinChange, 
-              { color: item.changeValue >= 0 ? '#00C851' : '#FF4444' }
+              { color: item.priceChange24h.includes('+') ? '#00C851' : '#FF4444' }
             ]}>
-              {item.change}
+              {item.priceChange24h}
             </Text>
-            <Text style={styles.marketCap}>{item.marketCap}</Text>
+            <Text style={styles.marketCap}>{item.formattedMarketCap}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -396,5 +394,10 @@ import { router } from 'expo-router'
     emptySubtext: {
       fontSize: 14,
       color: '#999',
+    },
+    coinImage: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
     },
   })
