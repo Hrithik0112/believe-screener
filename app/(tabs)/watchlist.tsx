@@ -5,9 +5,11 @@ import {
     TouchableOpacity, 
     StyleSheet, 
     Alert,
-    Animated
+    Animated,
+    ActivityIndicator
   } from 'react-native'
   import React, { useState, useRef } from 'react'
+import { useBelieveTokens } from '@/hooks/useBelieveTokens'
   
   // Mock watchlist data with 2 coins
   const initialWatchlistData = [
@@ -38,7 +40,12 @@ import {
   export default function Watchlist() {
     const [watchlistData, setWatchlistData] = useState(initialWatchlistData)
     const fadeAnim = useRef(new Animated.Value(1)).current
-  
+    const { tokens, loading, error, refetch } = useBelieveTokens(true, 30000);
+
+  if (loading) return <ActivityIndicator />;
+  if (error) return <Text>Error: {error}</Text>;
+  console.log("tokens",tokens);
+
     // Handle coin press for details
     const handleCoinPress = (coin: any) => {
       Alert.alert(

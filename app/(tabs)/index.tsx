@@ -14,10 +14,10 @@ import { useRouter } from 'expo-router';
 
 // Mock data - replace with real API data
 const marketStats = {
-  totalVolume: '$45.2B',
-  totalMarketCap: '$2.1T',
-  activeCryptos: '27,586',
-  topGainer: '+127.5%',
+  "24hVolume": "$56.20M",
+  "totalMarketCap": "$302.40M",
+  "coinLaunched": "40,544",
+  "liquidity": "$31.20M",
 };
 
 const cryptoList = [
@@ -110,7 +110,7 @@ export default function HomeScreen() {
         </View>
       </View>
       <View style={styles.cryptoStats}>
-        <View style={styles.statItem}>
+        <View>
           <Text style={[styles.statLabel, { color: isDark ? '#8E8E93' : '#666' }]}>
             Market Cap
           </Text>
@@ -118,7 +118,7 @@ export default function HomeScreen() {
             {item.marketCap}
           </Text>
         </View>
-        <View style={styles.statItem}>
+        <View>
           <Text style={[styles.statLabel, { color: isDark ? '#8E8E93' : '#666' }]}>
             Volume (24h)
           </Text>
@@ -144,40 +144,40 @@ export default function HomeScreen() {
             <View style={[styles.statCard, { backgroundColor: isDark ? '#2C2C2E' : '#FFFFFF' }]}>
               <MaterialIcons name="trending-up" size={24} color="#4CAF50" />
               <Text style={[styles.statCardValue, { color: isDark ? '#FFFFFF' : '#1a1a1a' }]}>
-                {marketStats.totalVolume}
+                {marketStats["24hVolume"]}
               </Text>
               <Text style={[styles.statCardLabel, { color: isDark ? '#8E8E93' : '#666' }]}>
-                Total Volume
+                24h Volume
               </Text>
             </View>
             
             <View style={[styles.statCard, { backgroundColor: isDark ? '#2C2C2E' : '#FFFFFF' }]}>
               <FontAwesome5 name="coins" size={20} color="#FF6B35" />
               <Text style={[styles.statCardValue, { color: isDark ? '#FFFFFF' : '#1a1a1a' }]}>
-                {marketStats.totalMarketCap}
+                {marketStats["totalMarketCap"]}
               </Text>
               <Text style={[styles.statCardLabel, { color: isDark ? '#8E8E93' : '#666' }]}>
-                Market Cap
+                 Market Cap
               </Text>
             </View>
             
             <View style={[styles.statCard, { backgroundColor: isDark ? '#2C2C2E' : '#FFFFFF' }]}>
-              <MaterialIcons name="security" size={24} color="#2196F3" />
+              <MaterialIcons name="rocket-launch" size={24} color="#2196F3" />
               <Text style={[styles.statCardValue, { color: isDark ? '#FFFFFF' : '#1a1a1a' }]}>
-                {marketStats.activeCryptos}
+                {marketStats["coinLaunched"]}
               </Text>
               <Text style={[styles.statCardLabel, { color: isDark ? '#8E8E93' : '#666' }]}>
-                Active Cryptos
+                Coins Launched
               </Text>
             </View>
             
             <View style={[styles.statCard, { backgroundColor: isDark ? '#2C2C2E' : '#FFFFFF' }]}>
-              <MaterialIcons name="rocket-launch" size={24} color="#9C27B0" />
+              <FontAwesome5 name="money-bill-wave" size={24} color="#9C27B0" />
               <Text style={[styles.statCardValue, { color: '#4CAF50' }]}>
-                {marketStats.topGainer}
+                {marketStats["liquidity"]}
               </Text>
               <Text style={[styles.statCardLabel, { color: isDark ? '#8E8E93' : '#666' }]}>
-                Top Gainer
+                Total Liquidity
               </Text>
             </View>
           </View>
@@ -312,9 +312,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  statItem: {
-    flex: 1,
-  },
+
   statLabel: {
     fontSize: 12,
     fontWeight: '500',
